@@ -1,0 +1,7 @@
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\bin\Debug\lab3_CLR.exe.config
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\bin\Debug\lab3_CLR.exe
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\bin\Debug\lab3_CLR.pdb
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\obj\Debug\lab3_CLR.csprojAssemblyReference.cache
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\obj\Debug\lab3_CLR.csproj.CoreCompileInputs.cache
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\obj\Debug\lab3_CLR.exe
+C:\Users\r.zinevich\Desktop\HTML & CSS\lab 3 v2\lab3_CLR\lab3_CLR\obj\Debug\lab3_CLR.pdb

@@ -15,7 +15,33 @@ namespace lab3_CLR
         private List<string> subCommandsList = new List<string>();
         private bool isCommandCorrect = false;
 
-        public List<string> Parse(string command)
+        /// <summary>
+        /// Tries to parse command and if it correct returns "true" and returns "false" if command is uncorrect
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public bool IsCommandCorrect(string command)
+        {
+            TryParse(command);
+
+            return isCommandCorrect;
+        }
+
+        /// <summary>
+        /// Return list of subcommands
+        /// </summary>
+        /// <returns></returns>
+        public List<string> Parse()
+        {
+            return subCommandsList;
+        }
+
+        /// <summary>
+        /// Tries to parse command and returns list of subcommands
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private List<string> TryParse(string command)
         {
             string[] commands = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -55,7 +81,6 @@ namespace lab3_CLR
 
                         return subCommandsList;
                     }
-
                     break;
                 }
 
@@ -64,92 +89,46 @@ namespace lab3_CLR
                     switch (commands[1])
                     {
                         case "upload":
+                        case "remove":
+                        case "info":
                         {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
-                            bool isAnyCharacterBeforeQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
+                            List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
+                            bool isAnyCharacterAfterQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
 
-                            if (positionsOfQuotes.Count == 2 && isAnyCharacterBeforeQuote == false)
+                            string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (positionsOfQuotes.Count == 2 && isAnyCharacterAfterQuote == false && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
                             {
                                 subCommandsList.Add(commands[0]);
                                 subCommandsList.Add(commands[1]);
                                 subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
+
                                 isCommandCorrect = true;
 
                                 return subCommandsList;
                             }
-
                             break;
                         }
 
                         case "download":
-                        {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
-
-                            bool isAnyCharacter = IsAnyCharacterAfterLastQuote(command, positionsOfQuotes);
-                            isAnyCharacter = IsAnyCharacterBetweenNames(command, positionsOfQuotes, isAnyCharacter);
-
-                            if (positionsOfQuotes.Count == 4 && isAnyCharacter == false)
-                            {
-                                subCommandsList.Add(commands[0]);
-                                subCommandsList.Add(commands[1]);
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[2] + 1, positionsOfQuotes[3] - positionsOfQuotes[2] - 1));
-
-                                return subCommandsList;
-                            }
-
-                            break;
-                        }
-
                         case "move":
                         {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
+                            List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
 
                             bool isAnyCharacter = IsAnyCharacterAfterLastQuote(command, positionsOfQuotes);
                             isAnyCharacter = IsAnyCharacterBetweenNames(command, positionsOfQuotes, isAnyCharacter);
 
-                            if (positionsOfQuotes.Count == 4 && isAnyCharacter == false)
+                            string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            if (positionsOfQuotes.Count == 4 && isAnyCharacter == false
+                                && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
                             {
                                 subCommandsList.Add(commands[0]);
                                 subCommandsList.Add(commands[1]);
                                 subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
                                 subCommandsList.Add(command.Substring(positionsOfQuotes[2] + 1, positionsOfQuotes[3] - positionsOfQuotes[2] - 1));
-
-                                return subCommandsList;
-                            }
-
-                            break;
-                        }
-
-                        case "remove":
-                        {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
-                            bool isAnyCharacterBeforeQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
-
-                            if (positionsOfQuotes.Count == 2 && isAnyCharacterBeforeQuote == false)
-                            {
-                                subCommandsList.Add(commands[0]);
-                                subCommandsList.Add(commands[1]);
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
-
-                                isCommandCorrect = true;
-
-                                return subCommandsList;
-                            }
-
-                            break;
-                        }
-
-                        case "info":
-                        {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
-                            bool isAnyCharacterBeforeQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
-
-                            if (positionsOfQuotes.Count == 2 && isAnyCharacterBeforeQuote == false)
-                            {
-                                subCommandsList.Add(commands[0]);
-                                subCommandsList.Add(commands[1]);
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
 
                                 isCommandCorrect = true;
 
@@ -161,114 +140,66 @@ namespace lab3_CLR
 
                         case "export":
                         {
-                            List<int> positionsOfQuotes = GetCountOfQuotes(command);
-
-                            if (positionsOfQuotes.Count == 2)
+                            if (commands.Length == 3 && commands[2] == "--info")
                             {
-                                bool isAnyCharacter = false;
+                                AddSubCommandsToSubCommandsList(commands);
+                                isCommandCorrect = true;
 
-                                int indexOfEndOfExportSubComand = GetIndexOfEndOfExportSubComand(command);
-
-                                //проверка после export и перед путём
-                                isAnyCharacter = IsAnyCharacterBetweenExportAndPath(command, positionsOfQuotes, isAnyCharacter, indexOfEndOfExportSubComand);
-
-                                if (isAnyCharacter == false)
-                                {
-                                    //вырезаем 2 команды
-                                    string twoCommands = command.Substring(positionsOfQuotes[1] + 1, command.Length - positionsOfQuotes[1] - 1);
-
-                                    string[] twoLastCommands = twoCommands.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                                    
-                                    if (twoLastCommands.Length < 1 || twoLastCommands.Length > 2)
-                                    {
-                                        isAnyCharacter = true;
-                                        Console.WriteLine("Invalid operation");
-                                    }
-                                    else
-                                    {
-                                        if (twoLastCommands[0] != "--format")
-                                        {
-                                            isAnyCharacter = true;
-                                            Console.WriteLine("Invalid operation");
-                                        }
-                                        else
-                                        {
-                                            string path = command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1);
-
-                                            DirectoryInfo directory = new DirectoryInfo(path);
-
-                                            if (directory.Exists)
-                                            {
-                                                switch (twoLastCommands.Length)
-                                                {
-                                                    case 1:
-                                                    {
-                                                        JSONSerialization(metaFile, path);
-
-                                                        break;
-                                                    }
-                                                    case 2:
-                                                    {
-                                                        if (twoLastCommands.Length == 2 && (twoLastCommands[1] != "json" && twoLastCommands[1] != "xml"))
-                                                        {
-                                                            isAnyCharacter = true;
-                                                            Console.WriteLine("Invalid operation");
-                                                        }
-                                                        else
-                                                        {
-                                                            if (twoLastCommands[1] == "json")
-                                                            {
-                                                                JSONSerialization(metaFile, path);
-                                                            }
-                                                            else
-                                                            {
-                                                                XMLSerialization(metaFile, path);
-                                                            }
-                                                        }
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine($"Directory {path} not exist");
-                                            }
-
-                                            if (twoLastCommands.Length == 2 && (twoLastCommands[1] != "json" && twoLastCommands[1] != "xml"))
-                                            {
-                                                isAnyCharacter = true;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid operation");
-                                }
+                                return subCommandsList;
                             }
                             else
                             {
-                                flag = true;
-                                Console.WriteLine("Invalid operation");
-                            }
+                                List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
 
+                                if (positionsOfQuotes.Count == 2 && command[positionsOfQuotes[0] - 1] == ' ' && command[positionsOfQuotes[1] + 1] == ' ')
+                                {
+                                    string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                                    string[] lastCommands = partsOfCommand[2].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                    string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    if (lastCommands.Length == 1 && lastCommands[0] == "--format"
+                                        && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
+                                    {
+                                        subCommandsList.Add(commands[0]);
+                                        subCommandsList.Add(commands[1]);
+                                        subCommandsList.Add(partsOfCommand[1]);
+                                        subCommandsList.Add(lastCommands[0]);
+
+                                        isCommandCorrect = true;
+
+                                        return subCommandsList;
+                                    }
+
+                                    if (lastCommands.Length == 2 && lastCommands[0] == "--format"
+                                        && (lastCommands[1] == "json" || lastCommands[1] == "xml")
+                                        && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
+                                    {
+                                        subCommandsList.Add(commands[0]);
+                                        subCommandsList.Add(commands[1]);
+                                        subCommandsList.Add(partsOfCommand[1]);
+                                        subCommandsList.Add(lastCommands[0]);
+                                        subCommandsList.Add(lastCommands[1]);
+
+                                        isCommandCorrect = true;
+
+                                        return subCommandsList;
+                                    }
+                                }
+                            }                            
                             break;
                         }
-
                         default:
                             break;
                     }
                     break;
                 }
-
                 default:
                     break;
             }
-
             return null;
         }
 
-        private static bool IsAnyCharacterBetweenExportAndPath(string command, List<int> positionsOfQuotes, bool isAnyCharacter, int indexOfEndOfExportSubComand)
+        private bool IsAnyCharacterBetweenExportAndPath(string command, List<int> positionsOfQuotes, bool isAnyCharacter, int indexOfEndOfExportSubComand)
         {
             for (int i = indexOfEndOfExportSubComand + 1; i < positionsOfQuotes[0]; i++)
             {
@@ -281,23 +212,8 @@ namespace lab3_CLR
 
             return isAnyCharacter;
         }
-
-        private static int GetIndexOfEndOfExportSubComand(string command)
-        {
-            int indexOfT = 0;
-
-            for (int i = 0; i < command.Length; i++)
-            {
-                if (command[i] == 't')
-                {
-                    indexOfT = i;
-                }
-            }
-
-            return indexOfT;
-        }
-
-        private static bool IsAnyCharacterBetweenNames(string command, List<int> positionsOfQuotes, bool flag)
+        
+        private bool IsAnyCharacterBetweenNames(string command, List<int> positionsOfQuotes, bool flag)
         {
             for (int i = positionsOfQuotes[2] - 1; i > positionsOfQuotes[1]; i--)
             {
@@ -311,7 +227,7 @@ namespace lab3_CLR
             return flag;
         }
 
-        private static bool IsAnyCharacterAfterLastQuote(string command, List<int> positionsOfQuotes)
+        private bool IsAnyCharacterAfterLastQuote(string command, List<int> positionsOfQuotes)
         {
             bool flag = false;
 
@@ -330,7 +246,7 @@ namespace lab3_CLR
             return flag;
         }
 
-        private static bool IsAnyCharacterAfterQuote(string command, List<int> positions)
+        private bool IsAnyCharacterAfterQuote(string command, List<int> positions)
         {
             bool flag = false;
 
@@ -348,8 +264,8 @@ namespace lab3_CLR
 
             return flag;
         }
-
-        private static List<int> GetCountOfQuotes(string command)
+        
+        private List<int> GetPositionsOfQuotes(string command)
         {
             List<int> positions = new List<int>();
 
@@ -370,6 +286,6 @@ namespace lab3_CLR
             {
                 subCommandsList.Add(subCommand);
             }
-        }       
+        }
     }
 }
