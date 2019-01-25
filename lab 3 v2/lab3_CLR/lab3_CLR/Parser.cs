@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lab3_CLR
 {
-    class Parser
+    public class Parser
     {
-        public Parser()
-        {
-        }
-
         private List<string> subCommandsList = new List<string>();
         private bool isCommandCorrect = false;
 
@@ -26,12 +19,8 @@ namespace lab3_CLR
 
             return isCommandCorrect;
         }
-
-        /// <summary>
-        /// Return list of subcommands
-        /// </summary>
-        /// <returns></returns>
-        public List<string> Parse()
+                
+        public List<string> GetListOfSubCommands()
         {
             return subCommandsList;
         }
@@ -45,156 +34,166 @@ namespace lab3_CLR
         {
             string[] commands = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            switch (commands[0])
+            if (commands.Length != 0)
             {
-                case "-help":
+                switch (commands[0])
                 {
-                    if (commands.Length == 1)
+                    case "exit":
+                    case "-help":
                     {
-                        AddSubCommandsToSubCommandsList(commands);
-                        isCommandCorrect = true;
-
-                        return subCommandsList;
-                    }
-                    break;
-                }
-
-                case "--l":
-                {
-                    if (commands.Length == 4 && commands[2] == "--p")
-                    {
-                        AddSubCommandsToSubCommandsList(commands);
-                        isCommandCorrect = true;
-
-                        return subCommandsList;
-                    }
-
-                    break;
-                }
-
-                case "user":
-                {
-                    if (commands.Length == 2 && commands[1] == "info")
-                    {
-                        AddSubCommandsToSubCommandsList(commands);
-                        isCommandCorrect = true;
-
-                        return subCommandsList;
-                    }
-                    break;
-                }
-
-                case "file":
-                {
-                    switch (commands[1])
-                    {
-                        case "upload":
-                        case "remove":
-                        case "info":
+                        if (commands.Length == 1)
                         {
-                            List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
-                            bool isAnyCharacterAfterQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
+                            AddSubCommandsToSubCommandsList(commands);
+                            isCommandCorrect = true;
 
-                            string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
-                            string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            return subCommandsList;
+                        }
+                        break;
+                    }
 
-                            if (positionsOfQuotes.Count == 2 && isAnyCharacterAfterQuote == false && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
-                            {
-                                subCommandsList.Add(commands[0]);
-                                subCommandsList.Add(commands[1]);
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
+                    case "--l":
+                    {
+                        if (commands.Length == 4 && commands[2] == "--p")
+                        {
+                            AddSubCommandsToSubCommandsList(commands);
+                            isCommandCorrect = true;
 
-                                isCommandCorrect = true;
-
-                                return subCommandsList;
-                            }
-                            break;
+                            return subCommandsList;
                         }
 
-                        case "download":
-                        case "move":
+                        break;
+                    }
+
+                    case "user":
+                    {
+                        if (commands.Length == 2 && commands[1] == "info")
                         {
-                            List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
+                            AddSubCommandsToSubCommandsList(commands);
+                            isCommandCorrect = true;
 
-                            bool isAnyCharacter = IsAnyCharacterAfterLastQuote(command, positionsOfQuotes);
-                            isAnyCharacter = IsAnyCharacterBetweenNames(command, positionsOfQuotes, isAnyCharacter);
-
-                            string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
-                            string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (positionsOfQuotes.Count == 4 && isAnyCharacter == false
-                                && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
-                            {
-                                subCommandsList.Add(commands[0]);
-                                subCommandsList.Add(commands[1]);
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
-                                subCommandsList.Add(command.Substring(positionsOfQuotes[2] + 1, positionsOfQuotes[3] - positionsOfQuotes[2] - 1));
-
-                                isCommandCorrect = true;
-
-                                return subCommandsList;
-                            }
-
-                            break;
+                            return subCommandsList;
                         }
+                        break;
+                    }
 
-                        case "export":
+                    case "file":
+                    {
+                        switch (commands[1])
                         {
-                            if (commands.Length == 3 && commands[2] == "--info")
-                            {
-                                AddSubCommandsToSubCommandsList(commands);
-                                isCommandCorrect = true;
-
-                                return subCommandsList;
-                            }
-                            else
+                            case "upload":
+                            case "remove":
+                            case "info":
                             {
                                 List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
 
-                                if (positionsOfQuotes.Count == 2 && command[positionsOfQuotes[0] - 1] == ' ' && command[positionsOfQuotes[1] + 1] == ' ')
+                                if (positionsOfQuotes.Count == 2)
                                 {
+                                    bool isAnyCharacterAfterQuote = IsAnyCharacterAfterQuote(command, positionsOfQuotes);
+
                                     string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
-                                    string[] lastCommands = partsOfCommand[2].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                                     string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                                    if (lastCommands.Length == 1 && lastCommands[0] == "--format"
-                                        && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
+                                    if (isAnyCharacterAfterQuote == false && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
                                     {
                                         subCommandsList.Add(commands[0]);
                                         subCommandsList.Add(commands[1]);
-                                        subCommandsList.Add(partsOfCommand[1]);
-                                        subCommandsList.Add(lastCommands[0]);
-
-                                        isCommandCorrect = true;
-
-                                        return subCommandsList;
-                                    }
-
-                                    if (lastCommands.Length == 2 && lastCommands[0] == "--format"
-                                        && (lastCommands[1] == "json" || lastCommands[1] == "xml")
-                                        && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
-                                    {
-                                        subCommandsList.Add(commands[0]);
-                                        subCommandsList.Add(commands[1]);
-                                        subCommandsList.Add(partsOfCommand[1]);
-                                        subCommandsList.Add(lastCommands[0]);
-                                        subCommandsList.Add(lastCommands[1]);
+                                        subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
 
                                         isCommandCorrect = true;
 
                                         return subCommandsList;
                                     }
                                 }
-                            }                            
-                            break;
+                                break;
+                            }
+
+                            case "download":
+                            case "move":
+                            {
+                                List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
+
+                                if (positionsOfQuotes.Count == 4)
+                                {
+                                    bool isAnyCharacter = IsAnyCharacterAfterLastQuote(command, positionsOfQuotes);
+                                    isAnyCharacter = IsAnyCharacterBetweenNames(command, positionsOfQuotes, isAnyCharacter);
+
+                                    string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                                    string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    if (isAnyCharacter == false && startCommands.Length == 2
+                                        && command[positionsOfQuotes[0] - 1] == ' ')
+                                    {
+                                        subCommandsList.Add(commands[0]);
+                                        subCommandsList.Add(commands[1]);
+                                        subCommandsList.Add(command.Substring(positionsOfQuotes[0] + 1, positionsOfQuotes[1] - positionsOfQuotes[0] - 1));
+                                        subCommandsList.Add(command.Substring(positionsOfQuotes[2] + 1, positionsOfQuotes[3] - positionsOfQuotes[2] - 1));
+
+                                        isCommandCorrect = true;
+
+                                        return subCommandsList;
+                                    }
+                                }
+                                break;
+                            }
+
+                            case "export":
+                            {
+                                if (commands.Length == 3 && commands[2] == "--info")
+                                {
+                                    AddSubCommandsToSubCommandsList(commands);
+                                    isCommandCorrect = true;
+
+                                    return subCommandsList;
+                                }
+                                else
+                                {
+                                    List<int> positionsOfQuotes = GetPositionsOfQuotes(command);
+
+                                    if (positionsOfQuotes.Count == 2 && command[positionsOfQuotes[0] - 1] == ' ' && command[positionsOfQuotes[1] + 1] == ' ')
+                                    {
+                                        string[] partsOfCommand = command.Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                                        string[] lastCommands = partsOfCommand[2].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                        string[] startCommands = partsOfCommand[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                                        if (lastCommands.Length == 1 && lastCommands[0] == "--format"
+                                            && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
+                                        {
+                                            subCommandsList.Add(commands[0]);
+                                            subCommandsList.Add(commands[1]);
+                                            subCommandsList.Add(partsOfCommand[1]);
+                                            subCommandsList.Add(lastCommands[0]);
+
+                                            isCommandCorrect = true;
+
+                                            return subCommandsList;
+                                        }
+
+                                        if (lastCommands.Length == 2 && lastCommands[0] == "--format"
+                                            && (lastCommands[1] == "json" || lastCommands[1] == "xml")
+                                            && startCommands.Length == 2 && command[positionsOfQuotes[0] - 1] == ' ')
+                                        {
+                                            subCommandsList.Add(commands[0]);
+                                            subCommandsList.Add(commands[1]);
+                                            subCommandsList.Add(partsOfCommand[1]);
+                                            subCommandsList.Add(lastCommands[0]);
+                                            subCommandsList.Add(lastCommands[1]);
+
+                                            isCommandCorrect = true;
+
+                                            return subCommandsList;
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                            default:
+                                break;
                         }
-                        default:
-                            break;
+                        break;
                     }
-                    break;
+                    default:
+                        break;
                 }
-                default:
-                    break;
             }
             return null;
         }
